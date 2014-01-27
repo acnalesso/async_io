@@ -11,6 +11,7 @@ Gem::Specification.new do |s|
   s.homepage      = "https://github.com/acnalesso/async_io"
   s.summary       = "Simple asynchronous IO for ruby."
   s.description   = "Perform asyncrhonous IO for ruby using blocks and threads just pure old ruby code."
+  s.license       = "MIT"
 
   s.files         = `git ls-files app lib`.split("\n")
   s.test_files    = `git ls-files spec`.split("\n")

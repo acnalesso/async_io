@@ -1,1 +1,1 @@
-require 'async_io/async_io'
+require 'async_io/base'

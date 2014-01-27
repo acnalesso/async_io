@@ -93,5 +93,23 @@ module AsyncIO
       worker(payload) { }
     end
 
+    def interval(seconds)
+      new_interval? do
+        while true
+          rescuer { yield }
+          sleep(seconds)
+        end
+      end
+    end
+
+    def new_interval?
+      @interval ||= Thread.new { yield }
+    end
+
+    def clear_interval!
+      @interval.terminate
+      @interval = nil
+    end
+
   end
 end

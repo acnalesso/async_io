@@ -18,7 +18,8 @@ end
 
 describe AsyncIO::Base do
 
-  before        { Thread.stub(:new).and_return(double) }
+  let(:fake_thread) { double("FakeThread") }
+  before        { Thread.stub(:new).and_return(fake_thread) }
   let(:alien)   { AsyncIO::Base.new }
   let(:logger)  { AsyncIO::Logger }
 
@@ -88,8 +89,7 @@ describe AsyncIO::Base do
       payload = -> { :im_an_async_job }
 
       worker = double
-      alien.stub(:worker).
-        and_return(worker)
+      alien.stub(:worker).and_return(worker)
 
       ##
       # See the link below for a better understading how to
@@ -100,6 +100,20 @@ describe AsyncIO::Base do
 
       alien.should have_received(:worker).with(payload)
     end
+  end
+
+  context "#interval" do
+    it "executes a job in a given interval" do
+      alien.should_receive(:new_interval?)
+      alien.interval(0.0001) { sleep(10) }
+    end
+
+    it "must stop an interval" do
+      fake_thread.should_receive(:terminate)
+      alien.interval(0.0001) { sleep(20) }
+      alien.clear_interval!
+    end
+
   end
 
   context "#consumer" do
