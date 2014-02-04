@@ -26,8 +26,7 @@ module AsyncIO
   # how it is available within a block later on.
   # NOTE: You must pass a job ( i.e ruby block ).
   #
-  def self.async(payload, &job)
-    payload = payload || ->(n) { n }
+  def self.async(payload = Proc.new{}, &job)
     async_creator.worker(payload, &job)
   end
 
