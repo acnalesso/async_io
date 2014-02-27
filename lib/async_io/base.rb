@@ -10,9 +10,7 @@ module AsyncIO
     # Default:
     # Number of threads to be spanwed is 1
     #
-    # NOTE: Any sort of exception raised while
-    # 'getting' a job done will not be raised at all.
-    # Instead it will be logged to a specified log file.
+    # NOTE:
     #
     # Whenever an exception is raised, the thread that the
     # exception was raised from is killed, so we need a
@@ -93,6 +91,11 @@ module AsyncIO
       worker(payload) { }
     end
 
+    ##
+    # TODO:
+    # Allow multiple intervals to run on the same thread by storing
+    # them in a list, and calling them later on.
+    #
     def interval(seconds)
       new_interval? do
         while true
