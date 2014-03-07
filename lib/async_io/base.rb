@@ -73,7 +73,7 @@ module AsyncIO
     # whenever you send a message +job+ to it. Once
     # job is finished you will be able to get its result.
     #
-    def worker(payload, &job)
+    def worker(payload, job)
       rescuer do
         Worker.new(payload, job).tap { |w|
           queue.push(w)
@@ -88,7 +88,11 @@ module AsyncIO
     # and empty job. ( i.e empty block of code )
     #
     def async(&payload)
-      worker(payload) { }
+      worker(payload, proc {})
+    end
+
+    def async_with(job)
+      worker(proc {}, job)
     end
 
     ##
