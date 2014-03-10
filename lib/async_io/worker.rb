@@ -6,20 +6,20 @@ module AsyncIO
   class Worker
     include AsyncIO::Rescuer
 
-    attr_reader :payload, :job
+    attr_reader :payload, :task
     attr_reader :finished, :done
 
-    def initialize(payload, job)
+    def initialize(payload, task)
       @payload  = payload
-      @job      = job
+      @task     = task
       @done     = false
       @finished = false
     end
 
     ##
     # It sends payload a message +call+
-    # and passes the result of a job, by sending
-    # job a message +call+ as well, as its argument.
+    # and passes the result of task, by sending
+    # task a message +call+ as well, as its argument.
     # This allows us to do:
     #
     # aget_user(1) { |u| print u.name }
@@ -35,7 +35,7 @@ module AsyncIO
     # payload = Object.new
     # def payload.call(result); warn(result); end
     #
-    # job is pre-definied inside a method, it can
+    # task is pre-definied inside a method, it can
     # be anything, for example:
     # worker(payload) do
     #   User.find(uid)
@@ -43,14 +43,13 @@ module AsyncIO
     #
     def call
       try do
-        @finished = true
-        @done = job.call
-        payload.call(done)
+        @done = task.call
+        payload.call(done).tap { @finished = true }
       end
     end
 
     ##
-    # Tries to get the first job done, when an exception
+    # Tries to get the first task done, when an exception
     # is raised it then calls payload again passing a
     # fallback as its argument.
     #
@@ -70,7 +69,7 @@ module AsyncIO
       # from being raised.
       # It returns an instance of OpenStruct object with the
       # exception rescued ( i.e notice ) and the worker that
-      # was assigned to this particular job.
+      # was assigned to this particular task.
       #
       def fallback(notice)
         OpenStruct.new({ notice: notice, worker: self })

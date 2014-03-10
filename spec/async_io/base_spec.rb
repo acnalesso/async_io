@@ -71,19 +71,16 @@ describe AsyncIO::Base do
     # closures while using blocks.
     # The following might be helpul:
     # robertsosinski.com/2008/12/21/understanding-ruby-blocks-procs-and-lambdas
-
+    #
+    #
+    # See the link below for a better understading how to
+    # pass/call blocks of code in Ruby.
+    # pragdave.pragprog.com/pragdave/2005/11/symbolto_proc.html
     #
     it "should pass this payload block onto Worker" do
-      payload = -> { :im_an_async_job }
-
+      payload = -> { :im_a_payload }
       worker = double
       alien.stub(:worker).and_return(worker)
-
-      ##
-      # See the link below for a better understading how to
-      # pass/call blocks of code in Ruby.
-      # pragdave.pragprog.com/pragdave/2005/11/symbolto_proc.html
-      #
       alien.async(&payload)
 
       alien.should have_received(:worker).with( payload, kind_of(Proc) )
@@ -91,7 +88,7 @@ describe AsyncIO::Base do
   end
 
   context "#interval" do
-    it "executes a job in a given interval" do
+    it "executes a task within a given interval" do
       alien.should_receive(:new_interval?)
       alien.interval(0.0001) { sleep(10) }
     end

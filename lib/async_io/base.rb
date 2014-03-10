@@ -42,8 +42,8 @@ module AsyncIO
 
     ##
     # It creates a new Worker, pushes it onto the queue,
-    # whenever a 'job' (i.e a Ruby object ) is finished
-    # it calls the payload and passes the result of job
+    # whenever a 'task' (i.e a Ruby object ) is finished
+    # it calls the payload and passes the result of that task
     # to it.
     #
     # For example:
@@ -54,45 +54,41 @@ module AsyncIO
     #   end
     # end
     #
-    # It returns the worker created for a particular job
+    # It returns the worker created for this particular task
     # which you could send message +done+ to it in order
-    # to retrieve its job done.
-    # see prediction_io/worker.rb
+    # to retrieve its completed task.
+    # see async_io/worker.rb
     #
     # For example:
     # result = aget_user(1) { |u| Logger.info(u.name) }
     #
-    # # job may take a while to be done...
+    # # task may take a while to be done...
     #
     # user = result.done
     # user.name
     # => "John"
     #
-    # NOTE: Whenever you use the snippet above, if the job
+    # NOTE: Whenever you use the snippet above, if the task
     # has not been finished yet you will get +false+
-    # whenever you send a message +job+ to it. Once
-    # job is finished you will be able to get its result.
+    # whenever you send a message +task+ to it. Once
+    # task is finished you will be able to get its result.
     #
-    def worker(payload, job)
-      rescuer do
-        Worker.new(payload, job).tap { |w|
-          queue.push(w)
-        }
-      end
+    def worker(payload, task)
+      Worker.new(payload, task).tap { |w| queue.push(w) }
     end
 
     ##
     # Perform any sort of task that needs to be
     # asynchronously done.
     # NOTE: It does not return anything, as it receives
-    # and empty job. ( i.e empty block of code )
+    # and empty task. ( i.e empty block of code )
     #
     def async(&payload)
       worker(payload, proc {})
     end
 
-    def async_with(job)
-      worker(proc {}, job)
+    def async_with(task)
+      worker(proc {}, task)
     end
 
     ##
