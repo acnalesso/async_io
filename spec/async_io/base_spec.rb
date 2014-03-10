@@ -29,7 +29,7 @@ describe AsyncIO::Base do
     end
 
     it "should create 1 thread as default" do
-      alien.threads.size.should eq(1)
+      alien.threads.size.should eq 5
     end
 
   end
@@ -40,25 +40,13 @@ describe AsyncIO::Base do
       alien.should respond_to :worker
     end
 
-    it "should_not raise_error when no block is passed" do
-      expect {
-        alien.worker(:jason)
-      }.to_not raise_error
-    end
-
-    it "should not raise_error when block is passed" do
-      expect {
-        alien.worker(:lizza) { }
-      }.to_not raise_error
-    end
-
     it "should push worker onto the queue" do
-      alien.worker(:paul) { }
+      alien.worker(:paul, proc {})
       alien.extract_size!.should eq(1)
     end
 
     it "should return worker" do
-      result = alien.worker(:blunt) { }
+      result = alien.worker(:blunt, proc {})
       result.should be_instance_of AsyncIO::Worker
     end
   end
@@ -98,7 +86,7 @@ describe AsyncIO::Base do
       #
       alien.async(&payload)
 
-      alien.should have_received(:worker).with(payload)
+      alien.should have_received(:worker).with( payload, kind_of(Proc) )
     end
   end
 

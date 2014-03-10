@@ -8,7 +8,7 @@ module AsyncIO
 
     ##
     # Default:
-    # Number of threads to be spanwed is 1
+    # Number of threads to be spanwed is 5
     #
     # NOTE:
     #
@@ -19,9 +19,9 @@ module AsyncIO
     #
     attr_reader   :queue, :threads
     attr_accessor :logger
-    def initialize(n_threads=1)
-      @logger   = AsyncIO::Logger
-      @queue    = Queue.new
+    def initialize(n_threads = 5, args = { logger: AsyncIO::Logger, queue: Queue.new })
+      @logger   = args[:logger]
+      @queue    = args[:queue]
       @threads  = []
       n_threads.times { @threads << Thread.new { consumer } }
     end
